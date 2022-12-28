@@ -2,9 +2,14 @@
 <html>
   <head>
     <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
   <body>
+    <% if(currentUser){ %> 
+      <div>signed in as:<%=currentUser.username%></div>
+      <% }%>
+    <a href="/sign-up">sign up</a>
+    <a href="/login">login</a>
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
   </body>
