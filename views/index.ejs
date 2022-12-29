@@ -12,5 +12,18 @@
     <a href="/login">login</a>
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
+
+    <h1>Messages</h1>
+    <%if(messages){%>
+      <ul>
+        <%messages.forEach(message =>{ %>
+          <li> 
+            <span><%=message.content%></span>
+            <span><%=message.date%></span>
+          
+          </li>
+        <%}  )%>
+      </ul>
+      <%} %>
   </body>
 </html>
