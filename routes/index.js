@@ -3,7 +3,7 @@ var router = express.Router();
 let User = require("../models/User");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
-const { render } = require("../app");
+
 /* GET home page. */
 router.get("/", function (req, res, next) {
   res.render("index", { title: "Express", messages: null });
@@ -14,25 +14,30 @@ router.get("/sign-up", function (req, res, next) {
 });
 router.post("/sign-up", function (req, res, next) {
   //hash password
-  bcrypt.hash(req.body.passwordSignup, 10, function (err, hash) {
+  bcrypt.hash(req.body.password, 10, async function (err, hash) {
     //check err
     if (err) {
       return next(err);
     }
     let userDetails = {
-      username: req.body.usernameSignup,
+      username: req.body.username,
       password: hash,
       membership: false,
     };
     let newUser = new User(userDetails);
     //save user to database
-    newUser.save((err) => {
+    await newUser.save((err) => {
       if (err) {
         return next(err);
       }
-      //req.session.save();
-      res.redirect("/message");
+
+      res.redirect("/login");
     });
+
+    // passport.authenticate("local", {
+    //   successRedirect: "/message",
+    //   failureRedirect: "/login",
+    // });
   });
 });
 
@@ -42,7 +47,7 @@ router.get("/login", function (req, res) {
 router.post(
   "/login",
   passport.authenticate("local", {
-    successRedirect: "/login",
+    successRedirect: "/",
     failureRedirect: "/login",
   })
 );

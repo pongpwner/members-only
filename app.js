@@ -8,6 +8,7 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
+const FileStore = require("session-file-store")(session);
 const mongoose = require("mongoose");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -37,50 +38,80 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-//set up passport 3 methods
+//set up passport 2 methods
+
+//runs on login
+passport.serializeUser((user, done) => {
+  console.log(user);
+
+  return done(null, user.id);
+});
+
+//current problem is this is not being called
+passport.deserializeUser((id, done) => {
+  console.log("deserializeeeeeeeeeeeeeeeeeeeeeeeeeee");
+
+  User.findById(id, function (err, user) {
+    if (err) {
+      return done(err);
+    }
+
+    console.log(id);
+    console.log(user);
+    //assigns user to req.user
+    done(null, user);
+  });
+});
+
+// passprt.authenticate calls this callback
+
+//done calls serializeUser
 passport.use(
-  new LocalStrategy((username, password, done) => {
+  new LocalStrategy(function verify(username, password, done) {
     User.findOne({ username: username }, (err, user) => {
       if (err) {
+        console.log("1");
         return done(err);
       }
       if (!user) {
+        console.log("2");
         return done(null, false, { message: "Incorrect username" });
       }
-      if (
-        bcrypt.compare(password, user.password, (err, res) => {
-          if (res) {
-            // passwords match! log user in
-            return done(null, user);
-          } else {
-            // passwords do not match!
-            return done(null, false, { message: "Incorrect password" });
-          }
-        })
-      ) {
-        return done(null, false, { message: "Incorrect password" });
-      }
-      return done(null, user);
+
+      bcrypt.compare(password, user.password, (err, res) => {
+        if (res) {
+          // passwords match! log user in
+          console.log("3");
+          return done(null, user);
+        } else {
+          // passwords do not match!
+          console.log("4");
+          return done(null, false, { message: "Incorrect password" });
+        }
+      });
     });
   })
 );
-
-passport.serializeUser(function (user, done) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(function (id, done) {
-  User.findById(id, function (err, user) {
-    done(err, user);
-  });
-});
 //set up session
-app.use(session({ secret: "pong", resave: false, saveUninitialized: true }));
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(express.urlencoded({ extended: false }));
 
+app.use(
+  session({
+    secret: "pong",
+    resave: false,
+    saveUninitialized: false,
+    store: new FileStore(),
+  })
+);
+//checks if current session has req.session.passport, if so saves user id onto it
+app.use(passport.initialize());
+//calls passport authenticator,
+//1. Takes the MongoDB user ID obtained from the `passport.initialize()` method (run directly before) and passes it to the `passport.deserializeUser()` function (defined above in this module).  The `passport.deserializeUser()`
+//If the `passport.deserializeUser()` returns a user object, this user object is assigned to the `req.user` property
+app.use(passport.session());
+
+app.use(passport.authenticate("session"));
 app.use((req, res, next) => {
+  console.log(req.user);
   res.locals.currentUser = req.user;
   next();
 });

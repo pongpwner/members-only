@@ -1,9 +1,10 @@
 var express = require("express");
-const { render } = require("../app");
 var router = express.Router();
 const Message = require("../models/Message");
 
 router.get("/", function (req, res) {
+  console.log(req.session);
+  console.log(req.user);
   res.render("create-message");
 });
 
