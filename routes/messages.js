@@ -8,8 +8,9 @@ router.get("/", function (req, res) {
   res.render("create-message");
 });
 
-router.post("/", function (req, res) {
+router.post("/", function (req, res, next) {
   //need to sanitize inputs
+  console.log("message");
   console.log(req.user);
   let messageDetails = {
     title: req.body.title,

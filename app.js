@@ -13,6 +13,7 @@ const mongoose = require("mongoose");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var messageRouter = require("./routes/messages");
+var membershipRouter = require("./routes/membership");
 const User = require("./models/User");
 
 //set up database
@@ -42,22 +43,15 @@ app.use(express.static(path.join(__dirname, "public")));
 
 //runs on login
 passport.serializeUser((user, done) => {
-  console.log(user);
-
   return done(null, user.id);
 });
 
 //current problem is this is not being called
 passport.deserializeUser((id, done) => {
-  console.log("deserializeeeeeeeeeeeeeeeeeeeeeeeeeee");
-
   User.findById(id, function (err, user) {
     if (err) {
       return done(err);
     }
-
-    console.log(id);
-    console.log(user);
     //assigns user to req.user
     done(null, user);
   });
@@ -70,22 +64,20 @@ passport.use(
   new LocalStrategy(function verify(username, password, done) {
     User.findOne({ username: username }, (err, user) => {
       if (err) {
-        console.log("1");
         return done(err);
       }
       if (!user) {
-        console.log("2");
         return done(null, false, { message: "Incorrect username" });
       }
 
       bcrypt.compare(password, user.password, (err, res) => {
         if (res) {
           // passwords match! log user in
-          console.log("3");
+
           return done(null, user);
         } else {
           // passwords do not match!
-          console.log("4");
+
           return done(null, false, { message: "Incorrect password" });
         }
       });
@@ -111,7 +103,6 @@ app.use(passport.session());
 
 app.use(passport.authenticate("session"));
 app.use((req, res, next) => {
-  console.log(req.user);
   res.locals.currentUser = req.user;
   next();
 });
@@ -119,6 +110,7 @@ app.use((req, res, next) => {
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/message", messageRouter);
+app.use("/membership", membershipRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

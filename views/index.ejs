@@ -5,8 +5,10 @@
     <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
   <body>
+    <a href="/membership">membership</a>
     <% if(currentUser){ %> 
       <div>signed in as:<%=currentUser.username%></div>
+      <a href="/message">post a message</a>
       <% }%>
     <a href="/sign-up">sign up</a>
     <a href="/login">login</a>
@@ -18,8 +20,9 @@
       <ul>
         <%messages.forEach(message =>{ %>
           <li> 
+            <span><%=message.title%></span>
             <span><%=message.content%></span>
-            <span><%=message.date%></span>
+            <span><%=message.timestamp%></span>
           
           </li>
         <%}  )%>

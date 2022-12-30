@@ -3,10 +3,11 @@ var router = express.Router();
 let User = require("../models/User");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
-
+const Message = require("../models/Message");
 /* GET home page. */
-router.get("/", function (req, res, next) {
-  res.render("index", { title: "Express", messages: null });
+router.get("/", async function (req, res, next) {
+  let messageList = await Message.find({});
+  res.render("index", { title: "Express", messages: messageList });
 });
 
 router.get("/sign-up", function (req, res, next) {
