@@ -6,7 +6,7 @@ const passport = require("passport");
 const Message = require("../models/Message");
 /* GET home page. */
 router.get("/", async function (req, res, next) {
-  let messageList = await Message.find({});
+  let messageList = await Message.find({}).populate("author");
   res.render("index", { title: "Express", messages: messageList });
 });
 
@@ -52,4 +52,13 @@ router.post(
     failureRedirect: "/login",
   })
 );
+
+router.post("/logout", function (req, res, next) {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
+  });
+});
 module.exports = router;

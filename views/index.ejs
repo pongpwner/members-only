@@ -7,6 +7,9 @@
   <body>
     <a href="/membership">membership</a>
     <% if(currentUser){ %> 
+      <form action="/logout" method="POST">
+        <button type="submit">logout</button>
+      </form>
       <div>signed in as:<%=currentUser.username%></div>
       <a href="/message">post a message</a>
       <% }%>
@@ -23,7 +26,15 @@
             <span><%=message.title%></span>
             <span><%=message.content%></span>
             <span><%=message.timestamp%></span>
-          
+            <% if(currentUser && currentUser.membership){ %> 
+              <span><%=message.author.username%></span>
+              <%} %>
+            <% if(currentUser && currentUser.admin){ %> 
+              <form action="/delete-message" method="POST">
+                <button type="submit">delete</button>
+              </form>
+             
+              <%} %>
           </li>
         <%}  )%>
       </ul>
