@@ -27,4 +27,13 @@ router.post("/", function (req, res, next) {
   });
 });
 
+router.post("/delete/:id", function (req, res, next) {
+  console.log(req.params.id);
+  Message.findByIdAndDelete(req.params.id, function (err) {
+    if (err) {
+      next(err);
+    }
+    res.redirect("back");
+  });
+});
 module.exports = router;

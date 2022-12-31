@@ -29,8 +29,8 @@
             <% if(currentUser && currentUser.membership){ %> 
               <span><%=message.author.username%></span>
               <%} %>
-            <% if(currentUser && currentUser.admin){ %> 
-              <form action="/delete-message" method="POST">
+            <% if(currentUser && currentUser.admin){ %>             
+              <form action="/message/delete/<%=message._id %>" method="POST" >
                 <button type="submit">delete</button>
               </form>
              
