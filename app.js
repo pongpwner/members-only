@@ -8,7 +8,7 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
-const FileStore = require("session-file-store")(session);
+const MongoStore = require("connect-mongo");
 const mongoose = require("mongoose");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -91,7 +91,10 @@ app.use(
     secret: "pong",
     resave: false,
     saveUninitialized: false,
-    store: new FileStore(),
+    store: MongoStore.create({ mongoUrl: mongoDB }),
+    cookie: {
+      expires: 60 * 60 * 24 * 1000,
+    },
   })
 );
 //checks if current session has req.session.passport, if so saves user id onto it
