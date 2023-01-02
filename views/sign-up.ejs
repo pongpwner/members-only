@@ -15,5 +15,12 @@
       <input id="password-signup" name="password" type="password" />
       <button type="submit">sign up</button>
     </form>
+    <% if(errors){%>
+      <ul>
+        <%errors.forEach(error=>{%>
+        <li><%=error.msg %></li>
+          <%})%>
+      </ul>
+      <%}%>
   </body>
 </html>

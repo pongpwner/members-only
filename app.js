@@ -7,6 +7,7 @@ var logger = require("morgan");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
 const passport = require("passport");
+const { body, validationResult } = require("express-validator");
 const LocalStrategy = require("passport-local").Strategy;
 const MongoStore = require("connect-mongo");
 const mongoose = require("mongoose");
@@ -107,6 +108,10 @@ app.use(passport.session());
 app.use(passport.authenticate("session"));
 app.use((req, res, next) => {
   res.locals.currentUser = req.user;
+  next();
+});
+app.use(function (req, res, next) {
+  res.locals.errors = null;
   next();
 });
 //routes
