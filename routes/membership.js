@@ -1,27 +1,8 @@
 var express = require("express");
 var router = express.Router();
-const User = require("../models/User");
+const user_controller = require("../controllers/userController");
 
-router.get("/", (req, res) => {
-  res.render("membership-form");
-});
-
-router.post("/", async (req, res) => {
-  if (req.body.code === "1") {
-    User.findOneAndUpdate(
-      { _id: req.user._id },
-      { membership: true },
-      { new: true },
-      function (err, result) {
-        if (err) {
-          res.send(err);
-        }
-        res.redirect("/");
-      }
-    );
-  } else {
-    return res.redirect("/");
-  }
-});
+router.get("/", user_controller.getMembershipForm);
+router.post("/", user_controller.submitMemberCode);
 
 module.exports = router;
