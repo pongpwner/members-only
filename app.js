@@ -11,7 +11,6 @@ const LocalStrategy = require("passport-local").Strategy;
 const MongoStore = require("connect-mongo");
 const mongoose = require("mongoose");
 var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
 var messageRouter = require("./routes/messages");
 var membershipRouter = require("./routes/membership");
 const User = require("./models/User");
@@ -115,7 +114,6 @@ app.use(function (req, res, next) {
 });
 //routes
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
 app.use("/message", messageRouter);
 app.use("/membership", membershipRouter);
 

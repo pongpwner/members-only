@@ -8,7 +8,6 @@ exports.getSignUpForm = function (req, res, next) {
 };
 
 exports.signUp = [
-  "/sign-up",
   body("username", "username must have 1-16 characters")
     .trim()
     .isLength({ min: 1, max: 16 })
