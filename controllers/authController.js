@@ -1,8 +1,6 @@
-var express = require("express");
 let User = require("../models/User");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
-const Message = require("../models/Message");
 const { body, validationResult } = require("express-validator");
 
 exports.getSignUpForm = function (req, res, next) {
@@ -64,7 +62,6 @@ exports.logIn = [
   body("password").escape(),
   function (req, res, next) {
     const errors = validationResult(req);
-    console.log(errors);
     if (!errors.isEmpty(req)) {
       res.render("login", {
         password: req.body.password,
