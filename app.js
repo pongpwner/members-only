@@ -7,7 +7,6 @@ var logger = require("morgan");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
 const passport = require("passport");
-const { body, validationResult } = require("express-validator");
 const LocalStrategy = require("passport-local").Strategy;
 const MongoStore = require("connect-mongo");
 const mongoose = require("mongoose");

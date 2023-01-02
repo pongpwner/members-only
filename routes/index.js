@@ -26,10 +26,8 @@ router.post(
     .escape(),
 
   function (req, res, next) {
-    console.log(req.body);
-
     const errors = validationResult(req);
-    console.log(errors);
+
     if (!errors.isEmpty(req)) {
       //errors found, rerender form with appropriate information
       res.render("sign-up", {
@@ -74,6 +72,21 @@ router.get("/login", function (req, res) {
 });
 router.post(
   "/login",
+  body("username").escape(),
+
+  body("password").escape(),
+  function (req, res, next) {
+    const errors = validationResult(req);
+    console.log(errors);
+    if (!errors.isEmpty(req)) {
+      res.render("login", {
+        password: req.body.password,
+        username: req.body.username,
+      });
+    } else {
+      next();
+    }
+  },
   passport.authenticate("local", {
     successRedirect: "/",
     failureRedirect: "/login",
