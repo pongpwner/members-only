@@ -1,4 +1,4 @@
-const User = require("../models/User");
+import User from "../models/User";
 
 exports.getMembershipForm = (req, res) => {
   res.render("membership-form");

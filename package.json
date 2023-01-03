@@ -3,10 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node --trace-warnings ./bin/www"
+    "build": "npx tsc",
+    "start": "node --trace-warnings ./bin/www",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
+    "concurrently": "^7.6.0",
     "connect-mongo": "^4.6.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
@@ -21,5 +24,10 @@
     "nodemon": "^2.0.20",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.15",
+    "@types/node": "^18.11.18",
+    "typescript": "^4.9.4"
   }
 }
