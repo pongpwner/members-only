@@ -1,7 +1,8 @@
-import mongoose from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 const Schema = mongoose.Schema;
 
 export interface IUser {
+  _id: ObjectId;
   username: string;
   password: string;
   membership: boolean;

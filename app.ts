@@ -14,7 +14,10 @@ var indexRouter = require("./routes/index");
 var messageRouter = require("./routes/messages");
 var membershipRouter = require("./routes/membership");
 const User = require("./models/User");
-
+import { IUser } from "./models/User";
+export interface IUserReq extends Request {
+  user: IUser;
+}
 //set up database
 const mongoURI =
   "mongodb+srv://pong:pong@cluster0.bnvrbtj.mongodb.net/?retryWrites=true&w=majority";

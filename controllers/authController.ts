@@ -1,9 +1,14 @@
-let User = require("../models/User");
-const bcrypt = require("bcrypt");
-const passport = require("passport");
-const { body, validationResult } = require("express-validator");
+import { Request, Response, NextFunction } from "express";
+import { User } from "../models/User";
+import bcrypt from "bcrypt";
+import passport from "passport";
+import { body, validationResult } from "express-validator";
 
-exports.getSignUpForm = function (req, res, next) {
+exports.getSignUpForm = function (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   res.render("sign-up");
 };
 
@@ -16,10 +21,10 @@ exports.signUp = [
   body("password", "password must be betweeen 6 and 20 characters")
     .isLength({ min: 6, max: 10 })
     .escape(),
-  function (req, res, next) {
+  function (req: Request, res: Response, next: NextFunction) {
     const errors = validationResult(req);
 
-    if (!errors.isEmpty(req)) {
+    if (!errors.isEmpty()) {
       //errors found, rerender form with appropriate information
       res.render("sign-up", {
         errors: errors.array(),
@@ -52,16 +57,16 @@ exports.signUp = [
     }
   },
 ];
-exports.getLogInForm = function (req, res) {
+exports.getLogInForm = function (req: Request, res: Response) {
   res.render("login");
 };
 
 exports.logIn = [
   body("username").escape(),
   body("password").escape(),
-  function (req, res, next) {
+  function (req: Request, res: Response, next: NextFunction) {
     const errors = validationResult(req);
-    if (!errors.isEmpty(req)) {
+    if (!errors.isEmpty()) {
       res.render("login", {
         password: req.body.password,
         username: req.body.username,
@@ -75,7 +80,7 @@ exports.logIn = [
     failureRedirect: "/login",
   }),
 ];
-exports.logOut = function (req, res, next) {
+exports.logOut = function (req: Request, res: Response, next: NextFunction) {
   req.logout(function (err) {
     if (err) {
       return next(err);

@@ -1,8 +1,9 @@
-import mongoose from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 import { IUser } from "./User";
 const Schema = mongoose.Schema;
 
 export interface IMessage {
+  _id: ObjectId;
   title: string;
   content: string;
   timestamp: Date;

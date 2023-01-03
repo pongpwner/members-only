@@ -1,10 +1,11 @@
-import User from "../models/User";
-
-exports.getMembershipForm = (req, res) => {
+import { Request, Response } from "express";
+import { User, IUser } from "../models/User";
+import { IUserReq } from "../app";
+exports.getMembershipForm = (req: Request, res: Response) => {
   res.render("membership-form");
 };
 
-exports.submitMemberCode = async (req, res) => {
+exports.submitMemberCode = async (req: IUserReq, res: Response) => {
   if (req.body.code === "1") {
     User.findOneAndUpdate(
       { _id: req.user._id },

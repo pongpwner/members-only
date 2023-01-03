@@ -1,12 +1,18 @@
-const Message = require("../models/Message");
-const { body, validationResult } = require("express-validator");
-
-exports.getAllMessages = async function (req, res, next) {
+import { Request, Response, NextFunction } from "express";
+import { Message } from "../models/Message";
+import { body, validationResult } from "express-validator";
+import { IUserReq } from "../app";
+import { Error } from "mongoose";
+exports.getAllMessages = async function (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   let messageList = await Message.find({}).populate("author");
   res.render("index", { title: "Express", messages: messageList });
 };
 
-exports.getMessageForm = function (req, res) {
+exports.getMessageForm = function (req: Request, res: Response) {
   res.render("message-form");
 };
 
@@ -19,9 +25,9 @@ exports.postMessage = [
     .trim()
     .isLength({ min: 1, max: 300 })
     .escape(),
-  function (req, res, next) {
+  function (req: IUserReq, res: Response, next: NextFunction) {
     const errors = validationResult(req);
-    if (!errors.isEmpty(req)) {
+    if (!errors.isEmpty()) {
       res.render("message-form", {
         title: req.body.title,
         content: req.body.content,
@@ -45,8 +51,12 @@ exports.postMessage = [
   },
 ];
 
-exports.deleteMessage = function (req, res, next) {
-  Message.findByIdAndDelete(req.params.id, function (err) {
+exports.deleteMessage = function (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  Message.findByIdAndDelete(req.params.id, function (err: Error) {
     if (err) {
       next(err);
     }
