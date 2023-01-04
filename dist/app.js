@@ -11,14 +11,14 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
-const passport = require("passport");
+const passport_1 = __importDefault(require("passport"));
 const LocalStrategy = require("passport-local").Strategy;
 const MongoStore = require("connect-mongo");
 const mongoose = require("mongoose");
-var indexRouter = require("./routes/index");
-var messageRouter = require("./routes/messages");
-var membershipRouter = require("./routes/membership");
-const User = require("./models/User");
+const index_1 = __importDefault(require("./routes/index"));
+const messages_1 = __importDefault(require("./routes/messages"));
+const membership_1 = __importDefault(require("./routes/membership"));
+const User_1 = require("./models/User");
 //set up database
 const mongoURI = "mongodb+srv://pong:pong@cluster0.bnvrbtj.mongodb.net/?retryWrites=true&w=majority";
 const mongoDB = process.env.DB_KEY || mongoURI;
@@ -30,21 +30,19 @@ const db = mongoose.connection;
 db.on("error", console.error.bind(console, "mongo connection error"));
 var app = (0, express_1.default)();
 // view engine setup
-app.set("views", path.join(__dirname, "views"));
+app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "ejs");
 app.use(logger("dev"));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express_1.default.static(path.join(__dirname, "public")));
-//set up passport 2 methods
-//runs on login
-passport.serializeUser((user, done) => {
+passport_1.default.serializeUser((user, done) => {
     return done(null, user.id);
 });
 //current problem is this is not being called
-passport.deserializeUser((id, done) => {
-    User.findById(id, function (err, user) {
+passport_1.default.deserializeUser((id, done) => {
+    User_1.User.findById(id, function (err, user) {
         if (err) {
             return done(err);
         }
@@ -54,8 +52,8 @@ passport.deserializeUser((id, done) => {
 });
 // passprt.authenticate calls this callback
 //done calls serializeUser
-passport.use(new LocalStrategy(function verify(username, password, done) {
-    User.findOne({ username: username }, (err, user) => {
+passport_1.default.use(new LocalStrategy(function verify(username, password, done) {
+    User_1.User.findOne({ username: username }, (err, user) => {
         if (err) {
             return done(err);
         }
@@ -85,12 +83,12 @@ app.use(session({
     },
 }));
 //checks if current session has req.session.passport, if so saves user id onto it
-app.use(passport.initialize());
+app.use(passport_1.default.initialize());
 //calls passport authenticator,
 //1. Takes the MongoDB user ID obtained from the `passport.initialize()` method (run directly before) and passes it to the `passport.deserializeUser()` function (defined above in this module).  The `passport.deserializeUser()`
 //If the `passport.deserializeUser()` returns a user object, this user object is assigned to the `req.user` property
-app.use(passport.session());
-app.use(passport.authenticate("session"));
+app.use(passport_1.default.session());
+app.use(passport_1.default.authenticate("session"));
 app.use((req, res, next) => {
     res.locals.currentUser = req.user;
     next();
@@ -100,14 +98,13 @@ app.use(function (req, res, next) {
     next();
 });
 //routes
-app.use("/", indexRouter);
-app.use("/message", messageRouter);
-app.use("/membership", membershipRouter);
+app.use("/", index_1.default);
+app.use("/message", messages_1.default);
+app.use("/membership", membership_1.default);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     next(createError(404));
 });
-// error handler
 app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;

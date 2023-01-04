@@ -19,7 +19,7 @@ exports.signUp = [
     .escape(),
 
   body("password", "password must be betweeen 6 and 20 characters")
-    .isLength({ min: 6, max: 10 })
+    .isLength({ min: 6, max: 20 })
     .escape(),
   function (req: Request, res: Response, next: NextFunction) {
     const errors = validationResult(req);

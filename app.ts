@@ -6,14 +6,15 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
-const passport = require("passport");
+import passport from "passport";
 const LocalStrategy = require("passport-local").Strategy;
 const MongoStore = require("connect-mongo");
 const mongoose = require("mongoose");
-var indexRouter = require("./routes/index");
-var messageRouter = require("./routes/messages");
-var membershipRouter = require("./routes/membership");
-const User = require("./models/User");
+import indexRouter from "./routes/index";
+import messageRouter from "./routes/messages";
+import membershipRouter from "./routes/membership";
+
+import { User } from "./models/User";
 import { IUser } from "./models/User";
 export interface IUserReq extends Request {
   user: IUser;
@@ -32,7 +33,7 @@ db.on("error", console.error.bind(console, "mongo connection error"));
 var app = express();
 
 // view engine setup
-app.set("views", path.join(__dirname, "views"));
+app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "ejs");
 
 app.use(logger("dev"));
@@ -44,13 +45,16 @@ app.use(express.static(path.join(__dirname, "public")));
 //set up passport 2 methods
 
 //runs on login
-passport.serializeUser((user, done) => {
+interface IPassportUser {
+  id?: string;
+}
+passport.serializeUser((user: IPassportUser, done) => {
   return done(null, user.id);
 });
 
 //current problem is this is not being called
 passport.deserializeUser((id, done) => {
-  User.findById(id, function (err, user) {
+  User.findById(id, function (err: Error, user: IUser) {
     if (err) {
       return done(err);
     }
@@ -63,8 +67,12 @@ passport.deserializeUser((id, done) => {
 
 //done calls serializeUser
 passport.use(
-  new LocalStrategy(function verify(username, password, done) {
-    User.findOne({ username: username }, (err, user) => {
+  new LocalStrategy(function verify(
+    username: string,
+    password: string,
+    done: Function
+  ) {
+    User.findOne({ username: username }, (err: Error, user: IUser) => {
       if (err) {
         return done(err);
       }
@@ -72,7 +80,7 @@ passport.use(
         return done(null, false, { message: "Incorrect username" });
       }
 
-      bcrypt.compare(password, user.password, (err, res) => {
+      bcrypt.compare(password, user.password, (err: Error, res: Object) => {
         if (res) {
           // passwords match! log user in
 
@@ -126,7 +134,15 @@ app.use(function (req, res, next) {
 });
 
 // error handler
-app.use(function (err: Error, req: Request, res: Response, next: Function) {
+interface ResponseError extends Error {
+  status?: number;
+}
+app.use(function (
+  err: ResponseError,
+  req: Request,
+  res: Response,
+  next: Function
+) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};

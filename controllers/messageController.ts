@@ -3,7 +3,8 @@ import { Message } from "../models/Message";
 import { body, validationResult } from "express-validator";
 import { IUserReq } from "../app";
 import { Error } from "mongoose";
-exports.getAllMessages = async function (
+import { IUser } from "../models/User";
+export const getAllMessages = async function (
   req: Request,
   res: Response,
   next: NextFunction
@@ -12,11 +13,11 @@ exports.getAllMessages = async function (
   res.render("index", { title: "Express", messages: messageList });
 };
 
-exports.getMessageForm = function (req: Request, res: Response) {
+export const getMessageForm = function (req: Request, res: Response) {
   res.render("message-form");
 };
 
-exports.postMessage = [
+export const postMessage = [
   body("title", "title needs to be between 1 and 30 characters")
     .trim()
     .isLength({ min: 1, max: 30 })
@@ -37,9 +38,10 @@ exports.postMessage = [
       let messageDetails = {
         title: req.body.title,
         content: req.body.content,
-        author: req.user._id,
+        author: req.user!._id,
         timestamp: new Date(),
       };
+
       let newMessage = new Message(messageDetails);
       newMessage.save((err) => {
         if (err) {
@@ -51,7 +53,7 @@ exports.postMessage = [
   },
 ];
 
-exports.deleteMessage = function (
+export const deleteMessage = function (
   req: Request,
   res: Response,
   next: NextFunction
