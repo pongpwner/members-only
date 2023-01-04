@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { User } from "../models/User";
+import { IUser, User } from "../models/User";
 import bcrypt from "bcrypt";
 import passport from "passport";
 import { body, validationResult } from "express-validator";
@@ -21,7 +21,7 @@ exports.signUp = [
   body("password", "password must be betweeen 6 and 20 characters")
     .isLength({ min: 6, max: 20 })
     .escape(),
-  function (req: Request, res: Response, next: NextFunction) {
+  async function (req: Request, res: Response, next: NextFunction) {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -33,6 +33,16 @@ exports.signUp = [
       });
     } else {
       // no errors is valid
+      //check for duplicate username
+      let duplicateUser = await User.find({ username: req.body.username });
+      console.log(duplicateUser);
+      if (duplicateUser.length > 0) {
+        return res.render("sign-up", {
+          errors: [{ msg: "userrname exists" }],
+          username: req.body.username,
+          password: req.body.password,
+        });
+      }
       //hash password
       bcrypt.hash(req.body.password, 10, async function (err, hash) {
         //check err

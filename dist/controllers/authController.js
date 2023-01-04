@@ -28,40 +28,52 @@ exports.signUp = [
         .isLength({ min: 6, max: 20 })
         .escape(),
     function (req, res, next) {
-        const errors = (0, express_validator_1.validationResult)(req);
-        if (!errors.isEmpty()) {
-            //errors found, rerender form with appropriate information
-            res.render("sign-up", {
-                errors: errors.array(),
-                username: req.body.username,
-                password: req.body.password,
-            });
-        }
-        else {
-            // no errors is valid
-            //hash password
-            bcrypt_1.default.hash(req.body.password, 10, function (err, hash) {
-                return __awaiter(this, void 0, void 0, function* () {
-                    //check err
-                    if (err) {
-                        return next(err);
-                    }
-                    let userDetails = {
+        return __awaiter(this, void 0, void 0, function* () {
+            const errors = (0, express_validator_1.validationResult)(req);
+            if (!errors.isEmpty()) {
+                //errors found, rerender form with appropriate information
+                res.render("sign-up", {
+                    errors: errors.array(),
+                    username: req.body.username,
+                    password: req.body.password,
+                });
+            }
+            else {
+                // no errors is valid
+                //check for duplicate username
+                let duplicateUser = yield User_1.User.find({ username: req.body.username });
+                console.log(duplicateUser);
+                if (duplicateUser.length > 0) {
+                    return res.render("sign-up", {
+                        errors: [{ msg: "userrname exists" }],
                         username: req.body.username,
-                        password: hash,
-                        membership: false,
-                    };
-                    let newUser = new User_1.User(userDetails);
-                    //save user to database
-                    yield newUser.save((err) => {
+                        password: req.body.password,
+                    });
+                }
+                //hash password
+                bcrypt_1.default.hash(req.body.password, 10, function (err, hash) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        //check err
                         if (err) {
                             return next(err);
                         }
-                        res.redirect("/login");
+                        let userDetails = {
+                            username: req.body.username,
+                            password: hash,
+                            membership: false,
+                        };
+                        let newUser = new User_1.User(userDetails);
+                        //save user to database
+                        yield newUser.save((err) => {
+                            if (err) {
+                                return next(err);
+                            }
+                            res.redirect("/login");
+                        });
                     });
                 });
-            });
-        }
+            }
+        });
     },
 ];
 exports.getLogInForm = function (req, res) {
